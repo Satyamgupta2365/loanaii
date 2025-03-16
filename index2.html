@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Advisor Chatbot</title>
+    <script>
+        function sendMessage() {
+            let userMessage = document.getElementById("userMessage").value;
+            let userLang = document.getElementById("language").value;
+
+            fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage, language: userLang })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("response").innerText = data.response;
+                let audio = new Audio(data.audio);
+                audio.play();
+            });
+        }
+
+        function uploadPDF() {
+            let fileInput = document.getElementById("pdfFile");
+            let formData = new FormData();
+            formData.append("pdf", fileInput.files[0]);
+            formData.append("language", document.getElementById("language").value);
+
+            fetch("/upload", { method: "POST", body: formData })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("response").innerText = data.response;
+                let audio = new Audio(data.audio);
+                audio.play();
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>Loan Advisor Chatbot</h2>
+    <label for="language">Select Language:</label>
+    <select id="language">
+        <option value="en-IN">English</option>
+        <option value="hi-IN">Hindi</option>
+        <option value="kn-IN">Kannada</option>
+    </select>
+    
+    <br><br>
+    <input type="text" id="userMessage" placeholder="Type your question...">
+    <button onclick="sendMessage()">Send</button>
+
+    <br><br>
+    <input type="file" id="pdfFile">
+    <button onclick="uploadPDF()">Upload PDF</button>
+
+    <h3>Response:</h3>
+    <p id="response"></p>
+</body>
+</html>
